@@ -1,4 +1,5 @@
 import os
+import traceback
 from flask import Flask
 from flask import render_template, json, request
 from flask_limiter import Limiter
@@ -73,7 +74,7 @@ def index():
     except ValueError as v:
         logging.error(v)
         response = app.response_class(
-            response=json.dumps("wrong date format" + v.__str__()),
+            response=json.dumps("wrong date format\n" + v.__str__() + traceback.format_exc()),
             status=400,
             mimetype="application/json"
         )
