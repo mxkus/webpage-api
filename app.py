@@ -42,14 +42,14 @@ def get_generation(date_string, country_code) -> dict:
 def index():
     date_string = request.args.get("date", "20201111", str)
     country_code = request.args.get("country", "DE", str)
-    plot = request.args.get("plot", "false", str)
+    plot_string = request.args.get("plot", "false", str)
     logging.warning(date_string)
     logging.warning(country_code)
-    logging.warning(plot)
+    logging.warning(plot_string)
     logging.warning(request.args)
-    plot_bool = True if plot == "true" else False
+    plot_bool = True if plot_string == "true" else False
     try:
-        datetime.datetime.strptime(date_string, r"%Y%m%d")
+        #datetime.datetime.strptime(date_string, r"%Y%m%d")
         data = get_generation(date_string, country_code)
         if plot_bool == False:
             response = app.response_class(
