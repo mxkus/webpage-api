@@ -28,8 +28,9 @@ def get_generation(date_string, country_code) -> dict:
         os.makedirs(directory, exist_ok=True)
         df = client.query_generation(country_code, start=start,end=end, psr_type=None, nett=True).sum()
         dic = dict(df)
-        with open(filename, "wb") as file:
-            pickle.dump(dic, file)
+        if date_string < datetime.date.today().strftime("%Y%m%d"):
+            with open(filename, "wb") as file:
+                pickle.dump(dic, file)
 
     # df is a series
     return dic
