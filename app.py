@@ -43,6 +43,10 @@ def index():
     date_string = request.args.get("date", "20201111", str)
     country_code = request.args.get("country", "DE", str)
     plot = request.args.get("plot", "false", str)
+    logging.warning(date_string)
+    logging.warning(country_code)
+    logging.warning(plot)
+    logging.warning(request.args)
     plot_bool = True if plot == "true" else False
     try:
         datetime.datetime.strptime(date_string, r"%Y%m%d")
