@@ -62,8 +62,10 @@ def index():
                 list(keys), 
                 force_ascii=True
             )
+            fig_string = fig.get_string()
+            json_object = {"fig": fig_string}
             response = app.response_class(
-                response=fig.get_string(),
+                response=json.dumps(json_object),
                 status=200,
                 mimetype='application/json'
             )
