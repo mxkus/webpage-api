@@ -25,18 +25,18 @@ def get_generation(date_string, country_code) -> dict:
     filename = os.path.join("files", country_code, f"{date_string}.pkl")
     if os.path.isfile(filename):
         with open(filename, "rb") as file:
-            dic = pickle.load(file)
+            data_dict = pickle.load(file)
     else:
         directory = os.path.dirname(filename)
         os.makedirs(directory, exist_ok=True)
-        df = client.query_generation(country_code, start=start,end=end, psr_type=None, nett=True).sum()
-        dic = dict(df)
+        data_series = client.query_generation(country_code, start=start,end=end, psr_type=None, nett=True).sum()
+        data_dict = dict(data_series)
         if date_string < datetime.date.today().strftime("%Y%m%d"):
             with open(filename, "wb") as file:
-                pickle.dump(dic, file)
+                pickle.dump(data_dict, file)
 
     # df is a series
-    return dic
+    return data_dict
 
 @app.route("/", methods=['GET'])
 @limiter.limit("100 per minute")
@@ -44,10 +44,6 @@ def index():
     date_string = request.args.get("date", "20201111", str)
     country_code = request.args.get("country", "DE", str)
     plot_string = request.args.get("plot", "false", str)
-    logging.warning(date_string)
-    logging.warning(country_code)
-    logging.warning(plot_string)
-    logging.warning(request.args)
     plot_bool = True if plot_string == "true" else False
     try:
         #datetime.datetime.strptime(date_string, r"%Y%m%d")
@@ -59,10 +55,10 @@ def index():
                 mimetype='application/json'
             )
         else:
-            (keys,values) = zip(*data.items())
+            (keys, values) = zip(*data.items())
             fig = tpl.figure()
             fig.barh(
-                list(values), 
+                [int(value) for value in values], 
                 list(keys), 
                 force_ascii=True
             )
