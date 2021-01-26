@@ -45,7 +45,7 @@ def index():
     plot = request.args.get("plot", "false", str)
     plot_bool = True if plot == "true" else False
     try:
-        datetime.datetime.strptime(date_string, "%Y%m%d")
+        datetime.datetime.strptime(date_string, r"%Y%m%d")
         data = get_generation(date_string, country_code)
         if plot_bool == False:
             response = app.response_class(
