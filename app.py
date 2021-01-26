@@ -67,7 +67,7 @@ def index():
                 mimetype='application/json'
             )
     except ValueError as v:
-        logging.info(v)
+        logging.error(v)
         response = app.response_class(
             response=json.dumps("wrong date format"),
             status=400,
