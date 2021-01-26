@@ -69,7 +69,7 @@ def index():
     except ValueError as v:
         logging.error(v)
         response = app.response_class(
-            response=json.dumps("wrong date format" + v.__str__),
+            response=json.dumps("wrong date format" + v.__str__()),
             status=400,
             mimetype="application/json"
         )
