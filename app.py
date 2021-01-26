@@ -6,6 +6,7 @@ from flask_limiter.util import get_remote_address
 import pandas as pd
 import datetime
 import pickle
+import termplotlib as tpl
 
 app = Flask(__name__)
 limiter = Limiter(
@@ -40,14 +41,30 @@ def get_generation(date_string, country_code) -> dict:
 def index():
     date_string = request.args.get("date", "20201111", str)
     country_code = request.args.get("country", "DE", str)
+    plot = request.args.get("plot", "false", str)
+    plot_bool = True if plot == "true" else False
     try:
         datetime.datetime.strptime(date_string, "%Y%m%d")
         data = get_generation(date_string, country_code)
-        response = app.response_class(
-            response=json.dumps(data),
-            status=200,
-            mimetype='application/json'
-        )
+        if plot_bool == False:
+            response = app.response_class(
+                response=json.dumps(data),
+                status=200,
+                mimetype='application/json'
+            )
+        else:
+            (keys,values) = zip(*data.items())
+            fig = tpl.figure()
+            fig.barh(
+                list(values), 
+                list(keys), 
+                force_ascii=True
+            )
+            response = app.response_class(
+                response=fig.get_string(),
+                status=200,
+                mimetype='application/json'
+            )
     except ValueError:
         response = app.response_class(
             response=json.dumps("wrong date format"),
@@ -55,6 +72,7 @@ def index():
             mimetype="application/json"
         )
     return response
+    
 
 
 if __name__ == "__main__":
