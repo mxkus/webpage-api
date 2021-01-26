@@ -7,6 +7,7 @@ import pandas as pd
 import datetime
 import pickle
 import termplotlib as tpl
+import logging
 
 app = Flask(__name__)
 limiter = Limiter(
@@ -65,7 +66,8 @@ def index():
                 status=200,
                 mimetype='application/json'
             )
-    except ValueError:
+    except ValueError as v:
+        logging.info(v)
         response = app.response_class(
             response=json.dumps("wrong date format"),
             status=400,
