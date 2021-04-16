@@ -77,7 +77,25 @@ def index():
             mimetype="application/json"
         )
     return response
+
     
+@app.route("/images/", methods=['GET'])
+@limiter.limit("100 per minute")
+def images():
+    url = request.args.get("url", "https://mkusterer.de/img/avatar.png", str)
+    from PIL import Image
+    import requests
+    import numpy as np
+    from io import BytesIO
+    response = requests.get(url)
+    img = np.array(Image.open(BytesIO(response.content))).tolist()
+    response = app.response_class(
+        response=json.dumps(img),
+        status=200,
+        mimetype='application/json'
+    )
+
+    return response
 
 
 if __name__ == "__main__":
