@@ -38,7 +38,7 @@ def get_generation(date_string, country_code) -> dict:
     # df is a series
     return data_dict
 
-@app.route("/", methods=['GET'])
+@app.route("/energy/", methods=['GET'])
 @limiter.limit("100 per minute")
 def index():
     date_string = request.args.get("date", "20201111", str)
