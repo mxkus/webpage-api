@@ -83,12 +83,13 @@ def index():
 @limiter.limit("100 per minute")
 def images():
     url = request.args.get("url", "https://mkusterer.de/img/avatar.png", str)
-    from PIL import Image
+    from PIL import Image, ImageFile
     import requests
     import numpy as np
     from io import BytesIO
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
     response = requests.get(url)
-    img = np.array(Image.open(BytesIO(response.content))).tolist()
+    img = np.array(Image.open(BytesIO(response.content)).convert("RGB")).tolist()
     response = app.response_class(
         response=json.dumps(img),
         status=200,
@@ -96,6 +97,28 @@ def images():
     )
 
     return response
+
+
+@app.route('/images_hook/', methods=['POST'])
+@limiter.limit("10 per minute")
+def get_image():
+    import urllib
+    import numpy as np
+    from PIL import Image
+    from io import BytesIO
+    image_b64 = request.json["imageBase64"]
+    response = urllib.request.urlopen(image_b64)
+
+    img = np.array(Image.open(BytesIO(response.read())).convert("RGB")).tolist()
+
+    response = app.response_class(
+        response=json.dumps(img),
+        status=200,
+        mimetype='application/json'
+    )
+
+    return response
+
 
 
 if __name__ == "__main__":
