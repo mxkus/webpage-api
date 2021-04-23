@@ -99,6 +99,7 @@ def get_image():
 
     return response
 
+
 @app.route('/translate/', methods=['GET', 'POST'])
 @limiter.limit("10 per minute")
 def translate():
