@@ -79,26 +79,6 @@ def index():
     return response
 
     
-@app.route("/images/", methods=['GET'])
-@limiter.limit("100 per minute")
-def images():
-    url = request.args.get("url", "https://mkusterer.de/img/avatar.png", str)
-    from PIL import Image, ImageFile
-    import requests
-    import numpy as np
-    from io import BytesIO
-    ImageFile.LOAD_TRUNCATED_IMAGES = True
-    response = requests.get(url)
-    img = np.array(Image.open(BytesIO(response.content)).convert("RGB")).tolist()
-    response = app.response_class(
-        response=json.dumps(img),
-        status=200,
-        mimetype='application/json'
-    )
-
-    return response
-
-
 @app.route('/images_hook/', methods=['POST'])
 @limiter.limit("10 per minute")
 def get_image():
@@ -118,6 +98,29 @@ def get_image():
     )
 
     return response
+
+@app.route('/translate/', methods=['GET', 'POST'])
+@limiter.limit("10 per minute")
+def translate():
+    api_key = os.getenv("DEEPL_API_KEY")
+    print(api_key)
+    import requests
+    request_json = request.json
+    print(request_json)
+    target_lang = request_json.get("target_lang", "de")
+    translate_text = request_json.get("translate_text", "Please provide text sample")
+    r = requests.get(
+        f"https://api-free.deepl.com/v2/translate", 
+        params={"auth_key": api_key, "target_lang": target_lang, "text": translate_text[:1000]}
+    )
+    response = app.response_class(
+        response=r.content,
+        status=200,
+        mimetype='application/json'
+    )
+
+    return response
+
 
 
 
